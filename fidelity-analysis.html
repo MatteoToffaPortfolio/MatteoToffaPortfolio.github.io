@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Customer Fidelity Analysis — Matteo Toffanin</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #141720;
+      --border:    #1a2a2b;
+      --accent:    #2ec4d0;
+      --accent-2:  #237a82;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --tag-bg:    #0e2224;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,15,20,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo img { display: block; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .875rem;
+      transition: color .2s;
+    }
+
+    .back-link:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    /* ── HEADER ── */
+    .project-header {
+      margin-bottom: 56px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-meta {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .project-header h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .project-header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 12px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 24px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-size: .8rem;
+    }
+
+    .section p {
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section ul li {
+      color: var(--muted);
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .section ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: .75rem;
+    }
+
+    /* ── INSIGHT CARDS ── */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+
+    .insight-card .insight-num {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .insight-card h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -.01em;
+    }
+
+    .insight-card p {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .insight-card .action {
+      font-size: .78rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── DASHBOARD IMAGES ── */
+    .dashboard-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-block img {
+      width: 100%;
+      display: block;
+    }
+
+    .dashboard-block .caption {
+      padding: 14px 20px;
+      font-size: .8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── DIVIDER ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="inner">
+      <a href="index.html" class="nav-logo">
+        <img src="logo.png" alt="Matteo Toffanin" height="40">
+      </a>
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Torna al portfolio
+      </a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="project-header">
+      <div class="project-meta">02 — Customer Analytics</div>
+      <h1>Retail Customer Fidelity Analysis (RFM)</h1>
+      <p>Analisi del comportamento clienti nel settore retail tramite modello RFM, con segmentazione, dashboard Power BI e raccomandazioni strategiche per marketing, retention e crescita.</p>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Pandas · NumPy</span>
+        <span class="tag">Power BI</span>
+        <span class="tag">RFM Analysis</span>
+        <span class="tag">Customer Segmentation</span>
+        <span class="tag">DAX</span>
+        <span class="tag">Feature Engineering</span>
+      </div>
+    </header>
+
+    <!-- OBIETTIVO -->
+    <div class="section">
+      <h2>Obiettivo del progetto</h2>
+      <p>Analizzare il comportamento dei clienti nel settore retail utilizzando un approccio RFM (Recency, Frequency, Monetary), con l'obiettivo di identificare segmenti ad alto valore e supportare decisioni di marketing, retention e crescita.</p>
+    </div>
+
+    <hr>
+
+    <!-- DATA PREPARATION -->
+    <div class="section">
+      <h2>Data Preparation & EDA</h2>
+      <p>Il dataset è stato costruito replicando la struttura di dati retail reali, mantenendo logiche di business coerenti e sostituendo le informazioni sensibili. L'obiettivo di questa fase è stato preparare un dataset affidabile per analisi fidelity cliente e data visualization.</p>
+
+      <h3>Data Cleaning</h3>
+
+      <h3>1. Validazione iniziale</h3>
+      <p>Verificata la completezza delle colonne chiave:</p>
+      <ul>
+        <li>ID_Card</li>
+        <li>Prezzo</li>
+        <li>Prodotto</li>
+        <li>Data</li>
+      </ul>
+      <p>Nessun valore nullo rilevato nelle variabili critiche.</p>
+
+      <h3>2. Coerenza dati — Business Logic</h3>
+      <p>Controlli effettuati per garantire coerenza con logiche retail reali:</p>
+      <ul>
+        <li>Sesso ↔ Reparto: Cliente M → Reparto Uomo / Cliente F → Reparto Donna</li>
+        <li>Prodotto ↔ Mondo: T-shirt / Jeans → Casual · Scarpe / Felpe → Sport · Giacche → Luxury</li>
+        <li>Prezzo ↔ Categoria: T-shirt fascia bassa · Jeans / Felpe fascia media · Giacche fascia alta</li>
+      </ul>
+
+      <h3>3. Gestione duplicati</h3>
+      <p>Verifica duplicati su chiavi transazionali: (ID_Card, Data, Codice_Articolo, Prezzo). Rimozione dei duplicati per evitare distorsioni nelle metriche cliente.</p>
+
+      <h3>4. Controllo outlier</h3>
+      <p>Analisi della distribuzione dei prezzi e verifica coerenza rispetto alla categoria prodotto.</p>
+
+      <h3>Data Transformation</h3>
+      <ul>
+        <li>Creazione della colonna Data a partire da Anno, Mese, Giorno</li>
+        <li>Aggiunta di Giorno_Settimana e flag Weekend (booleano)</li>
+        <li>Uniformati valori categorici e conversione corretta dei tipi dati</li>
+      </ul>
+
+      <h3>EDA — Pattern identificati</h3>
+      <ul>
+        <li>Vendite per giorno della settimana e confronto weekend vs weekday</li>
+        <li>Identificazione picchi di vendita e performance per prodotto/categoria</li>
+        <li>Frequenza acquisti per cliente, distribuzione spesa, clienti ricorrenti vs occasionali</li>
+        <li>Distribuzione prezzi per categoria e verifica clustering naturale delle fasce</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- RFM -->
+    <div class="section">
+      <h2>Customer Analysis & RFM Modeling</h2>
+      <p>Sono state costruite tre metriche di fidelity cliente:</p>
+      <ul>
+        <li><strong style="color:var(--text)">Monetary</strong> — Spesa totale per cliente</li>
+        <li><strong style="color:var(--text)">Frequency</strong> — Numero acquisti per cliente</li>
+        <li><strong style="color:var(--text)">Recency</strong> — Giorni dall'ultimo acquisto</li>
+      </ul>
+
+      <h3>Segmentazione clienti</h3>
+      <ul>
+        <li>Top Client — alta spesa e alta frequenza</li>
+        <li>Medium Client — valore intermedio</li>
+        <li>Low Client — bassa spesa</li>
+      </ul>
+
+      <h3>Stato cliente (Recency)</h3>
+      <ul>
+        <li>Attivo — ≤ 30 giorni</li>
+        <li>A rischio — 31–90 giorni</li>
+        <li>Perso — &gt; 90 giorni</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- DASHBOARD -->
+    <div class="section">
+      <h2>Dashboard Power BI</h2>
+      <p>La dashboard è strutturata in tre sezioni principali.</p>
+
+      <div class="dashboard-block">
+        <img src="image1.png" alt="Overview Vendite">
+        <div class="caption">Overview Vendite — KPI totali, trend temporale, performance per negozio e prodotto</div>
+      </div>
+
+      <div class="dashboard-block">
+        <img src="image2.png" alt="Analisi Clienti">
+        <div class="caption">Analisi Clienti — Segmentazione, distribuzione spesa, top clienti</div>
+      </div>
+
+      <div class="dashboard-block">
+        <img src="image3.png" alt="Fidelity & Retention">
+        <div class="caption">Fidelity & Retention — Recency, clienti attivi vs a rischio vs persi</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- INSIGHTS -->
+    <div class="section">
+      <h2>Key Insights</h2>
+
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-num">01</div>
+          <h4>Concentrazione del fatturato</h4>
+          <p>Il fatturato è concentrato su una minoranza di clienti ad alto valore, mentre la maggior parte genera una spesa contenuta.</p>
+          <div class="action">→ Fidelizzazione Top Client · Strategie di retention</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">02</div>
+          <h4>Distribuzione clienti</h4>
+          <p>La maggioranza appartiene al segmento Medium, indicando opportunità di crescita verso il segmento superiore.</p>
+          <div class="action">→ Upselling verso Top Client</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">03</div>
+          <h4>Distribuzione della spesa</h4>
+          <p>Distribuzione a coda lunga: pochi high spender generano gran parte del valore totale.</p>
+          <div class="action">→ Personalizzazione offerte · Segmentazione marketing</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">04</div>
+          <h4>Frequenza e retention</h4>
+          <p>I clienti attivi mostrano una frequenza maggiore rispetto ai clienti persi.</p>
+          <div class="action">→ Aumentare frequenza per migliorare retention</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">05</div>
+          <h4>Recency e churn</h4>
+          <p>Una quota significativa di clienti risulta inattiva nel periodo analizzato.</p>
+          <div class="action">→ Campagne di re-engagement · Offerte mirate</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">06</div>
+          <h4>Differenze tra negozi</h4>
+          <p>I negozi principali generano la maggior parte del fatturato con logiche replicabili.</p>
+          <div class="action">→ Replicare strategie top store · Ottimizzare outlier</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">07</div>
+          <h4>Mix prodotto</h4>
+          <p>I prodotti ad alto volume non coincidono sempre con quelli a maggiore valore unitario.</p>
+          <div class="action">→ Ottimizzazione assortimento · Cross-selling</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">08</div>
+          <h4>Perdita di valore latente</h4>
+          <p>Una parte del fatturato deriva da clienti oggi inattivi, recuperabili con azioni mirate.</p>
+          <div class="action">→ Strategie di recupero clienti</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- CONCLUSIONI -->
+    <div class="section">
+      <h2>Conclusioni</h2>
+      <p>Il progetto dimostra come l'integrazione di analisi dati e logiche di business permetta di identificare segmenti ad alto valore, migliorare la retention clienti e supportare decisioni strategiche data-driven.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Matteo Toffanin — Portfolio</p>
+  </footer>
+
+</body>
+</html>
