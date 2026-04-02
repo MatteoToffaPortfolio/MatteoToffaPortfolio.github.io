@@ -222,6 +222,7 @@
     /* ── PROJECT CARDS ── */
     .projects {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
       margin-bottom: 100px;
     }
@@ -231,10 +232,10 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 36px;
-      display: grid;
-      grid-template-columns: 1fr auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       gap: 24px;
-      align-items: start;
       transition: border-color .25s, transform .25s;
       text-decoration: none;
       color: inherit;
@@ -266,7 +267,6 @@
       font-size: .9rem;
       line-height: 1.7;
       margin-bottom: 20px;
-      max-width: 560px;
     }
 
     .tags {
@@ -425,11 +425,12 @@
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .card {
+    @media (max-width: 768px) {
+      .projects {
         grid-template-columns: 1fr;
-        padding: 24px;
       }
+
+      .card { padding: 24px; }
 
       .card-arrow { display: none; }
     }
@@ -476,7 +477,7 @@
       <div class="projects">
 
         <!-- Card 1 -->
-        <a href="ddt-automation.html" class="card" target="_blank" rel="noopener">
+        <a href="ddt-automation.html" class="card">
           <div>
             <div class="card-number">01 — Process Automation</div>
             <h3>Automazione DDT</h3>
@@ -495,7 +496,7 @@
         </a>
 
         <!-- Card 2 -->
-        <a href="fidelity-analysis.html" class="card" target="_blank" rel="noopener">
+        <a href="fidelity-analysis.html" class="card">
           <div>
             <div class="card-number">02 — Customer Analytics</div>
             <h3>Retail Analysis Dashboard — Fidelity</h3>
