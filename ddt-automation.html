@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="favicon.png">
   <title>Automazione DDT — Matteo Toffanin</title>
 
   <style>
@@ -454,10 +453,19 @@
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 700px) {
+    @media (max-width: 768px) {
+      .page { padding: 48px 20px 80px; }
+      nav .inner { padding: 0 20px; }
+      .img-grid { max-width: 100%; }
+      .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
       .two-col { grid-template-columns: 1fr; }
-      .page { padding: 48px 24px 80px; }
-      nav .inner { padding: 0 24px; }
+      .impact-grid { grid-template-columns: 1fr; }
+      .project-header h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+      .section h2 { font-size: 1.3rem; }
+      .pipeline-step { gap: 14px; }
     }
   </style>
 </head>
