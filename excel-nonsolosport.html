@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Retail Size Analysis — Matteo Toffanin</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #141720;
+      --border:    #1a2a2b;
+      --accent:    #2ec4d0;
+      --accent-2:  #237a82;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --tag-bg:    #0e2224;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,15,20,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo img { display: block; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .875rem;
+      transition: color .2s;
+      position: relative;
+    }
+
+    .back-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 1.5px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform .3s ease;
+    }
+
+    .back-link:hover { color: var(--text); }
+    .back-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    /* ── LAYOUT ── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 72px 24px 120px;
+    }
+
+    /* ── PROJECT HEADER ── */
+    .project-header {
+      margin-bottom: 72px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-meta {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .project-header h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .project-header .lead {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 1200px;
+      margin-bottom: 32px;
+      line-height: 1.75;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 14px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 72px; }
+
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .section h2 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .section > p {
+      color: var(--muted);
+      font-size: .975rem;
+      max-width: 1200px;
+      margin-bottom: 16px;
+    }
+
+    /* ── SUB-BLOCK ── */
+    .sub-block { margin-top: 36px; }
+
+    .sub-block h3 {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .sub-block p {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 12px;
+    }
+
+    /* ── BULLET LIST ── */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .bullet-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 9px;
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 20px;
+      text-align: center;
+    }
+
+    .kpi-value {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .kpi-label {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .kpi-sub {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    /* ── SIZE BAR CHART ── */
+    .size-chart {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .size-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 80px 80px;
+      align-items: center;
+      gap: 12px;
+      font-size: .875rem;
+    }
+
+    .size-label {
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .bar-track {
+      background: rgba(46,196,208,.08);
+      border-radius: 4px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    }
+
+    .size-vendite {
+      color: var(--muted);
+      font-size: .82rem;
+      text-align: right;
+    }
+
+    .size-st {
+      font-weight: 700;
+      font-size: .82rem;
+      text-align: right;
+    }
+
+    .st-high  { color: var(--accent); }
+    .st-mid   { color: #f59e0b; }
+    .st-low   { color: #ef4444; }
+
+    /* ── REPARTO CARDS ── */
+    .reparto-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .reparto-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 20px;
+    }
+
+    .reparto-name {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .reparto-stat {
+      margin-bottom: 6px;
+      font-size: .875rem;
+      color: var(--muted);
+    }
+
+    .reparto-stat span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── LOGIC GRID ── */
+    .logic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .logic-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .875rem;
+    }
+
+    .logic-item .logic-rule {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .logic-item .logic-detail {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    /* ── INSIGHTS ── */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .25s, transform .25s;
+    }
+
+    .insight-card:hover {
+      border-color: rgba(46,196,208,.35);
+      transform: translateY(-3px);
+    }
+
+    .insight-num {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .insight-card h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.3;
+    }
+
+    .insight-card p {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .insight-action {
+      font-size: .78rem;
+      color: var(--accent);
+      font-weight: 600;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── NOTE ── */
+    .note-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 18px 22px;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.7;
+    }
+
+    /* ── PIVOT TABLE ── */
+    .pivot-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .875rem;
+    }
+
+    thead tr {
+      background: var(--surface);
+    }
+
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(46,196,208,.04); }
+
+    tbody td {
+      padding: 10px 16px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    tbody td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .st-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .st-badge.high { background: rgba(46,196,208,.12); color: var(--accent); }
+    .st-badge.mid  { background: rgba(245,158,11,.1);  color: #f59e0b; }
+    .st-badge.low  { background: rgba(239,68,68,.1);   color: #ef4444; }
+
+    /* ── DIVIDER ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 72px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .page { padding: 48px 24px 80px; }
+      .reparto-grid { grid-template-columns: 1fr; }
+      .insights-grid { grid-template-columns: 1fr; }
+      .nav-logo img { height: 30px; }
+      .size-row { grid-template-columns: 48px 1fr 64px 64px; }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .logic-grid { grid-template-columns: 1fr; }
+      .project-header h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+      .section h2 { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 540px) {
+      .page { padding: 48px 16px 80px; }
+      nav .inner { padding: 0 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="inner">
+      <a href="index.html" class="nav-logo">
+        <img src="logo.png" alt="Matteo Toffanin" height="40">
+      </a>
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Torna al portfolio
+      </a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="project-header">
+      <div class="project-meta">03 — Retail Analytics</div>
+      <h1>Retail Size Analysis<br>& Sell-Through 2025</h1>
+      <p class="lead">Analisi delle performance di vendita per taglia su una rete di 53 punti vendita retail sportivo: calcolo del Sell-Through per categoria, reparto e gruppo, identificazione delle taglie critiche e raccomandazioni per l'ottimizzazione dell'assortimento e della gestione dello stock.</p>
+      <div class="tags">
+        <span class="tag">Excel</span>
+        <span class="tag">Power Query</span>
+        <span class="tag">Pivot Table</span>
+        <span class="tag">Sell-Through Analysis</span>
+        <span class="tag">Size Curve</span>
+        <span class="tag">Stock Management</span>
+        <span class="tag">Retail Analytics</span>
+        <span class="tag">Assortment Planning</span>
+      </div>
+    </header>
+
+    <!-- OBIETTIVO -->
+    <div class="section">
+      <div class="section-label">Overview</div>
+      <h2>Obiettivo del progetto</h2>
+      <p>Analizzare le performance di vendita 2025 per taglia su tutta la rete retail, con l'obiettivo di misurare il Sell-Through (ST%) per ogni segmento di prodotto, identificare squilibri nell'assortimento e fornire indicazioni operative per migliorare la rotazione dello stock e ridurre le giacenze.</p>
+      <p>Il dataset copre l'intera stagione 2025 (12 mesi), 53 punti vendita, 3 reparti (Abbigliamento, Calzature, Accessori), 141 categorie di prodotto, 350 brand e oltre 239 taglie distinte per un totale di quasi 1 milione di righe di dati transazionali.</p>
+    </div>
+
+    <hr>
+
+    <!-- KPI -->
+    <div class="section">
+      <div class="section-label">Metriche Chiave</div>
+      <h2>Numeri del dataset</h2>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">972K</div>
+          <div class="kpi-label">Righe</div>
+          <div class="kpi-sub">Record nel dataset</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">53</div>
+          <div class="kpi-label">Punti vendita</div>
+          <div class="kpi-sub">Rete ASN / SPI</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">1,28M</div>
+          <div class="kpi-label">Pezzi venduti</div>
+          <div class="kpi-sub">Totale 2025</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">8,86M</div>
+          <div class="kpi-label">Giacenza</div>
+          <div class="kpi-sub">Pezzi a stock</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">12,6%</div>
+          <div class="kpi-label">Sell-Through</div>
+          <div class="kpi-sub">Medio complessivo</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">350</div>
+          <div class="kpi-label">Brand</div>
+          <div class="kpi-sub">Marchi presenti</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- DATA PREPARATION -->
+    <div class="section">
+      <div class="section-label">Fase 01</div>
+      <h2>Struttura del Dataset & Preparazione</h2>
+
+      <div class="sub-block">
+        <h3>Dimensioni analizzate</h3>
+        <p>Il dataset è strutturato su 9 colonne che coprono tutte le dimensioni rilevanti per l'analisi di taglia nel retail sportivo.</p>
+        <div class="logic-grid">
+          <div class="logic-item">
+            <div class="logic-rule">Punto vendita</div>
+            <div class="logic-detail">53 negozi identificati con codice e nome (es. 1001 - ASN - Venezia)</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Mese</div>
+            <div class="logic-detail">Granularità mensile su 12 mesi — permette analisi della stagionalità</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Reparto · Categoria · Marchio</div>
+            <div class="logic-detail">3 livelli gerarchici di prodotto — da macro a brand specifico</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Gruppo</div>
+            <div class="logic-detail">10 segmenti per genere/età: Uomo, Donna, Ragazzo, Ragazza, Unisex, Bambino, Neonato...</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Taglia</div>
+            <div class="logic-detail">239 valori distinti — taglie standard, numeriche (calzature), età (bambino), speciali</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Vendite Qtà 2025 · Giacenza 2025</div>
+            <div class="logic-detail">Le due metriche di output da cui si calcola il Sell-Through</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <h3>Calcolo del Sell-Through</h3>
+        <p>La metrica principale dell'analisi è il Sell-Through (ST%), calcolato come:</p>
+        <div class="logic-grid">
+          <div class="logic-item">
+            <div class="logic-rule">ST% = Vendite / (Vendite + Giacenza)</div>
+            <div class="logic-detail">Misura la percentuale di stock disponibile che è stata effettivamente venduta nel periodo</div>
+          </div>
+          <div class="logic-item">
+            <div class="logic-rule">Benchmark di riferimento</div>
+            <div class="logic-detail">ST% &gt; 15% → buona rotazione · 10–15% → nella norma · &lt; 10% → stock critico</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <h3>Complessità delle taglie</h3>
+        <ul class="bullet-list">
+          <li>Taglie standard (XS, S, M, L, XL, XXL) per abbigliamento adulto</li>
+          <li>Taglie numeriche EU (36–48) per calzature adulto</li>
+          <li>Taglie numeriche per bambino (calzature 20–35, abbigliamento 6–16 anni)</li>
+          <li>Taglie a range (es. 39-40, 43-44) tipiche di calze e accessori</li>
+          <li>Taglie speciali (Taglia Unica, OSFM, S/M, L/XL)</li>
+          <li>Taglie età (es. 13-14, 14-15) per abbigliamento ragazzo/ragazza</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ANALISI PER REPARTO -->
+    <div class="section">
+      <div class="section-label">Fase 02</div>
+      <h2>Performance per Reparto</h2>
+      <p>I tre reparti mostrano dinamiche di rotazione differenti, con Abbigliamento come reparto più performante e Calzature con il maggior potenziale di ottimizzazione.</p>
+
+      <div class="reparto-grid">
+        <div class="reparto-card">
+          <div class="reparto-name">Abbigliamento</div>
+          <div class="reparto-stat">Vendite: <span>657.581 pz</span></div>
+          <div class="reparto-stat">Giacenza: <span>4.086.325 pz</span></div>
+          <div class="reparto-stat">Sell-Through: <span>13,86%</span></div>
+          <div class="reparto-stat">Incidenza vendite: <span>51,3%</span></div>
+        </div>
+        <div class="reparto-card">
+          <div class="reparto-name">Accessori</div>
+          <div class="reparto-stat">Vendite: <span>396.824 pz</span></div>
+          <div class="reparto-stat">Giacenza: <span>2.755.671 pz</span></div>
+          <div class="reparto-stat">Sell-Through: <span>12,59%</span></div>
+          <div class="reparto-stat">Incidenza vendite: <span>31,0%</span></div>
+        </div>
+        <div class="reparto-card">
+          <div class="reparto-name">Calzature</div>
+          <div class="reparto-stat">Vendite: <span>226.358 pz</span></div>
+          <div class="reparto-stat">Giacenza: <span>2.017.434 pz</span></div>
+          <div class="reparto-stat">Sell-Through: <span>10,09%</span></div>
+          <div class="reparto-stat">Incidenza vendite: <span>17,7%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- CURVE TAGLIE -->
+    <div class="section">
+      <div class="section-label">Fase 03</div>
+      <h2>Size Curve — Abbigliamento Adulto</h2>
+      <p>Distribuzione delle vendite e Sell-Through per le taglie standard (XS→XXL) nel reparto Abbigliamento. M e L guidano i volumi, mentre XS e XXL mostrano rotazione più bassa.</p>
+
+      <div class="size-chart">
+        <div class="size-row" style="font-size:.72rem; color: var(--muted); font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px;">
+          <span></span>
+          <span>Volume vendite</span>
+          <span style="text-align:right">Vendite</span>
+          <span style="text-align:right">ST%</span>
+        </div>
+        <!-- XS -->
+        <div class="size-row">
+          <span class="size-label">XS</span>
+          <div class="bar-track"><div class="bar-fill" style="width:14.5%"></div></div>
+          <span class="size-vendite">24.696</span>
+          <span class="size-st st-low">11,1%</span>
+        </div>
+        <!-- S -->
+        <div class="size-row">
+          <span class="size-label">S</span>
+          <div class="bar-track"><div class="bar-fill" style="width:68.4%"></div></div>
+          <span class="size-vendite">116.865</span>
+          <span class="size-st st-mid">14,0%</span>
+        </div>
+        <!-- M -->
+        <div class="size-row">
+          <span class="size-label">M</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+          <span class="size-vendite">170.697</span>
+          <span class="size-st st-high">15,4%</span>
+        </div>
+        <!-- L -->
+        <div class="size-row">
+          <span class="size-label">L</span>
+          <div class="bar-track"><div class="bar-fill" style="width:80.5%"></div></div>
+          <span class="size-vendite">137.415</span>
+          <span class="size-st st-mid">14,4%</span>
+        </div>
+        <!-- XL -->
+        <div class="size-row">
+          <span class="size-label">XL</span>
+          <div class="bar-track"><div class="bar-fill" style="width:39.7%"></div></div>
+          <span class="size-vendite">67.789</span>
+          <span class="size-st st-mid">12,9%</span>
+        </div>
+        <!-- XXL -->
+        <div class="size-row">
+          <span class="size-label">XXL</span>
+          <div class="bar-track"><div class="bar-fill" style="width:6.4%"></div></div>
+          <span class="size-vendite">10.894</span>
+          <span class="size-st st-low">10,7%</span>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <h3>Pivot Sell-Through per Taglia (Uomo — tutte le categorie)</h3>
+        <p>La tabella pivot riassume le taglie principali del segmento Uomo con vendite, giacenze e ST%.</p>
+        <div class="pivot-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Taglia</th>
+                <th class="num">Vendite 2025</th>
+                <th class="num">Giacenza 2025</th>
+                <th class="num">Sell-Through %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>XS</td><td class="num">4.005</td><td class="num">26.112</td><td class="num"><span class="st-badge mid">13,3%</span></td></tr>
+              <tr><td>S</td><td class="num">68.565</td><td class="num">414.205</td><td class="num"><span class="st-badge mid">14,2%</span></td></tr>
+              <tr><td>M</td><td class="num">125.201</td><td class="num">650.443</td><td class="num"><span class="st-badge high">16,1%</span></td></tr>
+              <tr><td>L</td><td class="num">110.036</td><td class="num">623.832</td><td class="num"><span class="st-badge mid">15,0%</span></td></tr>
+              <tr><td>XL</td><td class="num">52.233</td><td class="num">367.810</td><td class="num"><span class="st-badge mid">12,4%</span></td></tr>
+              <tr><td>XXL</td><td class="num">8.817</td><td class="num">76.120</td><td class="num"><span class="st-badge low">10,4%</span></td></tr>
+              <tr><td>L/XL</td><td class="num">2.862</td><td class="num">13.785</td><td class="num"><span class="st-badge high">17,2%</span></td></tr>
+              <tr><td>S/M</td><td class="num">2.043</td><td class="num">12.654</td><td class="num"><span class="st-badge mid">13,9%</span></td></tr>
+              <tr><td>Taglia Unica</td><td class="num">17.924</td><td class="num">121.536</td><td class="num"><span class="st-badge mid">12,9%</span></td></tr>
+              <tr style="background: rgba(46,196,208,.04)"><td><strong>Totale</strong></td><td class="num"><strong>528.874</strong></td><td class="num"><strong>3.438.447</strong></td><td class="num"><strong>13,3%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- STAGIONALITA -->
+    <div class="section">
+      <div class="section-label">Fase 04</div>
+      <h2>Trend Stagionale & Performance Negozi</h2>
+
+      <div class="sub-block">
+        <h3>Picchi mensili di vendita</h3>
+        <p>L'analisi mensile rivela una chiara stagionalità con picchi estivi e natalizi, con il Sell-Through che tocca il massimo in luglio e dicembre.</p>
+        <ul class="bullet-list">
+          <li><strong>Luglio (mese 7):</strong> ST% 15,5% — picco assoluto, trainato da categoria tempo libero e beachwear</li>
+          <li><strong>Dicembre (mese 12):</strong> ST% 16,5% — secondo picco, regalo natalizio e saldi anticipati</li>
+          <li><strong>Agosto (mese 8):</strong> ST% 14,5% — coda della stagione estiva</li>
+          <li><strong>Febbraio (mese 2):</strong> ST% 9,1% — minimo annuale, fase inter-stagionale</li>
+          <li>Il secondo semestre mostra performance superiori al primo per tutti i reparti</li>
+        </ul>
+      </div>
+
+      <div class="sub-block">
+        <h3>Top performer per volume — Rete punti vendita</h3>
+        <div class="pivot-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Punto vendita</th>
+                <th class="num">Vendite 2025</th>
+                <th class="num">Giacenza</th>
+                <th class="num">ST%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1063 - ASN - Rovigo La Fattoria</td><td class="num">83.245</td><td class="num">408.354</td><td class="num"><span class="st-badge high">16,9%</span></td></tr>
+              <tr><td>2103 - SPI - Albignasego</td><td class="num">62.239</td><td class="num">435.043</td><td class="num"><span class="st-badge mid">12,5%</span></td></tr>
+              <tr><td>1082 - ASN - Siracusa</td><td class="num">58.843</td><td class="num">323.397</td><td class="num"><span class="st-badge high">15,4%</span></td></tr>
+              <tr><td>1076 - ASN - Sarmeola</td><td class="num">48.518</td><td class="num">359.534</td><td class="num"><span class="st-badge mid">11,9%</span></td></tr>
+              <tr><td>1008 - ASN - Parma</td><td class="num">44.625</td><td class="num">287.861</td><td class="num"><span class="st-badge mid">13,4%</span></td></tr>
+              <tr><td>1003 - ASN - Adria</td><td class="num">39.741</td><td class="num">213.333</td><td class="num"><span class="st-badge high">15,7%</span></td></tr>
+              <tr><td>1088 - ASN - Pisa</td><td class="num">35.540</td><td class="num">217.269</td><td class="num"><span class="st-badge mid">14,1%</span></td></tr>
+              <tr><td>1059 - ASN - Siderno</td><td class="num">34.774</td><td class="num">202.365</td><td class="num"><span class="st-badge mid">14,7%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- BRAND ANALYSIS -->
+    <div class="section">
+      <div class="section-label">Fase 05</div>
+      <h2>Analisi Brand & Categorie</h2>
+
+      <div class="sub-block">
+        <h3>Top brand per volume vendite</h3>
+        <ul class="bullet-list">
+          <li><strong>Nike:</strong> 172.503 righe — brand dominante con presenza capillare su tutte le categorie</li>
+          <li><strong>Adidas:</strong> 145.948 righe — secondo brand, forte su abbigliamento e calzature sport</li>
+          <li><strong>Puma:</strong> 50.994 · <strong>Arena:</strong> 27.634 (forte nel nuoto) · <strong>Under Armour:</strong> 25.345</li>
+          <li><strong>Asics, The North Face, Dickies, Converse, New Balance</strong> completano la top 10</li>
+        </ul>
+      </div>
+
+      <div class="sub-block">
+        <h3>Brand con ST% più elevato</h3>
+        <p>I brand lifestyle e outdoor mostrano Sell-Through superiori alla media, indicando una domanda più allineata all'offerta rispetto ai brand sportivi puri.</p>
+        <div class="pivot-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Marchio</th>
+                <th class="num">Vendite</th>
+                <th class="num">ST%</th>
+                <th>Posizionamento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>The North Face</td><td class="num">41.894</td><td class="num"><span class="st-badge high">18,1%</span></td><td style="color:var(--muted);font-size:.82rem">Outdoor / Premium</td></tr>
+              <tr><td>Havaianas</td><td class="num">11.730</td><td class="num"><span class="st-badge high">17,9%</span></td><td style="color:var(--muted);font-size:.82rem">Ciabatte / Beachwear</td></tr>
+              <tr><td>New Era</td><td class="num">22.708</td><td class="num"><span class="st-badge high">16,4%</span></td><td style="color:var(--muted);font-size:.82rem">Accessori / Cappelleria</td></tr>
+              <tr><td>Bama</td><td class="num">19.199</td><td class="num"><span class="st-badge high">15,8%</span></td><td style="color:var(--muted);font-size:.82rem">Accessori calzature</td></tr>
+              <tr><td>Wilson</td><td class="num">8.056</td><td class="num"><span class="st-badge high">15,7%</span></td><td style="color:var(--muted);font-size:.82rem">Racchettistica</td></tr>
+              <tr><td>Carhartt</td><td class="num">6.449</td><td class="num"><span class="st-badge high">15,6%</span></td><td style="color:var(--muted);font-size:.82rem">Workwear / Lifestyle</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub-block">
+        <h3>Categorie più vendute</h3>
+        <ul class="bullet-list">
+          <li><strong>Tempo Libero:</strong> 123.720 righe — categoria trainante, ampio spettro di taglie</li>
+          <li><strong>T-Shirt Manica Corta:</strong> 94.066 · <strong>Felpa FT:</strong> 48.291</li>
+          <li><strong>Running Neutre & Running:</strong> 30.246 + 29.241 — core business sportivo</li>
+          <li><strong>Ciabatte:</strong> 28.727 — alto ST% stagionale · <strong>Pantaloncino Sport:</strong> 28.531</li>
+          <li><strong>Calze:</strong> 26.014 — taglia a range con complessità di curve elevata</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- INSIGHTS -->
+    <div class="section">
+      <div class="section-label">Risultati</div>
+      <h2>Key Insights</h2>
+      <p>8 pattern critici emersi dall'analisi, con relative implicazioni operative per l'assortimento e la gestione dello stock.</p>
+
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-num">01</div>
+          <h4>Sovrabbondanza di stock generale</h4>
+          <p>Il ST% medio del 12,6% indica che meno di 1 pezzo su 8 viene venduto. La giacenza complessiva di 8,86M pezzi rappresenta una criticità strutturale di acquisto rispetto alla domanda reale.</p>
+          <div class="insight-action">Revisione budget acquisti · Open-to-buy strutturato</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">02</div>
+          <h4>Taglie M e L guidano la domanda</h4>
+          <p>Nel segmento Abbigliamento adulto, M e L concentrano oltre il 57% delle vendite standard. La size curve reale è più stretta al centro rispetto ai volumi acquistati nelle taglie estreme.</p>
+          <div class="insight-action">Ottimizzazione curva taglie · Ridurre profondità XS e XXL</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">03</div>
+          <h4>Calzature — bassa rotazione strutturale</h4>
+          <p>Con un ST% del 10,1% — il più basso tra i reparti — e 2M pezzi a giacenza, le calzature mostrano un eccesso di stock significativo, amplificato dalla complessità delle taglie numeriche.</p>
+          <div class="insight-action">Analisi size run per brand · Rivedere profondità numerica</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">04</div>
+          <h4>Bambino e Neonato — rotazione critica</h4>
+          <p>I segmenti Bambina (6,4%), Bambino (7,5%) e Neonato (8,1%) registrano i sell-through più bassi. La frammentazione delle taglie per età genera eccessi puntuali difficili da trasferire tra negozi.</p>
+          <div class="insight-action">Riduzioni assortimento kidswear · Razionalizzare taglie età</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">05</div>
+          <h4>Stagionalità marcata — estate e Natale</h4>
+          <p>Luglio (15,5%) e dicembre (16,5%) concentrano i picchi di ST%. Febbraio è il mese peggiore (9,1%). La gestione degli ingressi di merce deve anticipare questi picchi con stock adeguato.</p>
+          <div class="insight-action">Pianificazione consegne anticipata · Analisi open stock estivo</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">06</div>
+          <h4>Rovigo La Fattoria — benchmark rete</h4>
+          <p>Il negozio 1063 combina il volume più alto (83K pezzi) con un ST% del 16,9%, ben sopra la media. Rappresenta il modello di efficienza da analizzare e replicare nella gestione assortimento.</p>
+          <div class="insight-action">Best practice store · Benchmark curva taglie</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">07</div>
+          <h4>Lifestyle e Outdoor battono lo sport puro</h4>
+          <p>Brand come The North Face (18,1%), Havaianas (17,9%), Carhartt (15,6%) mostrano ST% superiori ai brand sportivi dominanti. Il consumatore premia la coerenza tra offerta e domanda nel lifestyle.</p>
+          <div class="insight-action">Aumentare peso lifestyle · Monitorare trend brand emergenti</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">08</div>
+          <h4>Taglie speciali e range — mercato di nicchia</h4>
+          <p>Taglie come L/XL (17,2%), 41-42 (27,1%), 43-44 (26,6%) mostrano ST% anomalmente alti. La domanda non è soddisfatta perché la profondità acquistata è troppo bassa rispetto alla richiesta effettiva.</p>
+          <div class="insight-action">Aumentare profondità taglie speciali ad alta rotazione</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- CONCLUSIONI -->
+    <div class="section">
+      <div class="section-label">Conclusioni</div>
+      <h2>Takeaway</h2>
+      <p>Il progetto dimostra come un'analisi granulare del Sell-Through per taglia permetta di trasformare quasi 1 milione di righe di dati transazionali in indicazioni operative concrete: dalla revisione della size curve per reparto all'identificazione dei brand e dei negozi benchmark, fino alla mappatura delle stagionalità per ottimizzare gli ingressi di merce. L'integrazione di queste logiche in una struttura Excel modulare consente a buyer e retail manager di aggiornare le analisi in tempo reale al variare dello stock.</p>
+    </div>
+
+    <hr>
+
+    <!-- NOTA -->
+    <div class="section">
+      <div class="section-label">Nota</div>
+      <h2>Privacy & Dati</h2>
+      <div class="note-block">
+        I dati utilizzati sono reali ma anonimizzati: i nomi dei negozi sono mantenuti in forma codificata e i dati sensibili (prezzi, margini, fornitori) sono stati rimossi. Il dataset rispecchia fedelmente la struttura e la complessità di un caso retail sportivo reale, mantenendo intatte le logiche di business e le relazioni tra dimensioni.
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Matteo Toffanin — Portfolio</p>
+  </footer>
+
+</body>
+</html>
