@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Portale Operativo Non Solo Sport — Matteo Toffanin</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #141720;
+      --border:    #1a2a2b;
+      --accent:    #2ec4d0;
+      --accent-2:  #237a82;
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --tag-bg:    #0e2224;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,15,20,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo img { display: block; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); text-decoration: none; font-size: .875rem;
+      transition: color .2s; position: relative;
+    }
+    .back-link::after {
+      content: ''; position: absolute; left: 0; bottom: -3px;
+      width: 100%; height: 1.5px; background: var(--accent);
+      transform: scaleX(0); transform-origin: right; transition: transform .3s ease;
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    .page { max-width: 1200px; margin: 0 auto; padding: 72px 24px 120px; }
+
+    .project-header { margin-bottom: 72px; padding-bottom: 56px; border-bottom: 1px solid var(--border); }
+    .project-meta { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+    .project-header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.1; margin-bottom: 20px; }
+    .project-header .lead { color: var(--muted); font-size: 1.1rem; max-width: 1200px; margin-bottom: 32px; line-height: 1.75; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 4px 14px; background: var(--tag-bg); border: 1px solid var(--border); border-radius: 100px; font-size: .75rem; color: var(--muted); font-weight: 500; }
+
+    .section { margin-bottom: 72px; }
+    .section-label { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .section h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 20px; line-height: 1.2; }
+    .section > p { color: var(--muted); font-size: .975rem; max-width: 1200px; margin-bottom: 16px; }
+
+    .sub-block { margin-top: 36px; }
+    .sub-block h3 { font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .sub-block p { color: var(--muted); font-size: .95rem; margin-bottom: 12px; }
+
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .bullet-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--muted); font-size: .95rem; }
+    .bullet-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 9px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px; text-align: center; }
+    .kpi-value { font-size: 1.9rem; font-weight: 800; letter-spacing: -.04em; color: var(--accent); margin-bottom: 4px; }
+    .kpi-label { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text); margin-bottom: 4px; }
+    .kpi-sub { font-size: .78rem; color: var(--muted); }
+
+    .section-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 20px; }
+    .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; transition: border-color .25s, transform .25s; }
+    .section-card:hover { border-color: rgba(46,196,208,.35); transform: translateY(-2px); }
+    .section-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .section-card-name { font-weight: 700; font-size: .95rem; line-height: 1.3; }
+    .section-card-count { font-size: .72rem; font-weight: 700; color: var(--accent); background: rgba(46,196,208,.1); padding: 2px 10px; border-radius: 100px; white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+    .section-card-desc { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+    .section-card-topics { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+    .topic-chip { font-size: .7rem; padding: 2px 8px; background: var(--tag-bg); border: 1px solid var(--border); border-radius: 100px; color: var(--muted); }
+
+    .nav-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+    .nav-mode-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; display: flex; flex-direction: column; gap: 10px; transition: border-color .25s, transform .25s; }
+    .nav-mode-card:hover { border-color: rgba(46,196,208,.35); transform: translateY(-3px); }
+    .nav-mode-icon { font-size: 1.6rem; line-height: 1; }
+    .nav-mode-name { font-weight: 700; font-size: 1rem; letter-spacing: -.02em; }
+    .nav-mode-desc { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+    .nav-mode-tech { font-size: .75rem; color: var(--accent); font-weight: 600; padding-top: 6px; border-top: 1px solid var(--border); }
+
+    .code-block { background: #0a0c10; border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: .82rem; line-height: 1.75; color: #b8c4d0; overflow-x: auto; margin-top: 16px; }
+    .c-comment { color: #4a5568; }
+    .c-keyword  { color: var(--accent); }
+    .c-string   { color: #68d391; }
+    .c-prop     { color: #fc8181; }
+
+    /* MOCKUP — light mode */
+    .portal-mockup { background: #f5f6f8; border: 1px solid #dde1e7; border-radius: 14px; overflow: hidden; margin-top: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.18); }
+    .mockup-bar { background: #0b4c9b; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .mockup-logo { font-weight: 800; font-size: .9rem; color: white; letter-spacing: .04em; }
+    .mockup-search { background: rgba(255,255,255,.2); border: none; border-radius: 6px; padding: 5px 14px; color: white; font-size: .78rem; width: 200px; }
+    .mockup-search::placeholder { color: rgba(255,255,255,.7); }
+    .mockup-body { display: grid; grid-template-columns: 220px 1fr; min-height: 300px; }
+    .mockup-sidebar { background: #ffffff; border-right: 1px solid #dde1e7; padding: 16px 0; }
+    .mockup-nav-section { padding: 6px 16px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #0b4c9b; margin-top: 10px; }
+    .mockup-nav-section:first-child { margin-top: 0; }
+    .mockup-nav-item { padding: 5px 16px 5px 24px; font-size: .78rem; color: #6b7280; border-left: 2px solid transparent; cursor: default; }
+    .mockup-nav-item.active { border-left-color: #0b4c9b; color: #111827; background: rgba(11,76,155,.06); font-weight: 600; }
+    .mockup-content { padding: 24px; background: #f5f6f8; }
+    .mockup-content-title { font-size: 1.1rem; font-weight: 800; color: #0b4c9b; margin-bottom: 14px; }
+    .mockup-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .mockup-card { border: 1px solid #dde1e7; border-top: 3px solid #0b4c9b; border-radius: 8px; padding: 12px; background: #ffffff; box-shadow: 0 1px 4px rgba(0,0,0,.06); transition: transform .15s, box-shadow .15s; cursor: default; }
+    .mockup-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.1); }
+    .mockup-card-title { font-size: .78rem; font-weight: 700; color: #111827; margin-bottom: 4px; }
+    .mockup-card-desc { font-size: .7rem; color: #6b7280; }
+    .mockup-card-link { font-size: .68rem; color: #0b4c9b; font-weight: 600; margin-top: 6px; }
+
+    .dashboard-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 16px; }
+    .dashboard-block img { width: 100%; display: block; cursor: zoom-in; transition: opacity .2s; }
+    .dashboard-block img:hover { opacity: .88; }
+    .dashboard-block .caption { padding: 14px 20px; font-size: .8rem; color: var(--muted); border-top: 1px solid var(--border); }
+
+    .insights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 8px; }
+    .insight-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transition: border-color .25s, transform .25s; }
+    .insight-card:hover { border-color: rgba(46,196,208,.35); transform: translateY(-3px); }
+    .insight-num { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+    .insight-card h4 { font-size: 1rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.3; }
+    .insight-card p { font-size: .875rem; color: var(--muted); line-height: 1.6; flex: 1; }
+    .insight-action { font-size: .78rem; color: var(--accent); font-weight: 600; padding-top: 6px; border-top: 1px solid var(--border); }
+
+    .note-block { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; color: var(--muted); font-size: .9rem; line-height: 1.7; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 0 0 72px; }
+
+    footer { border-top: 1px solid var(--border); padding: 28px 0; text-align: center; color: var(--muted); font-size: .8rem; }
+
+    @media (max-width: 900px) {
+      .mockup-body { grid-template-columns: 1fr; }
+      .mockup-sidebar { display: none; }
+      .mockup-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .page { padding: 48px 24px 80px; }
+      .nav-modes { grid-template-columns: 1fr; }
+      .insights-grid { grid-template-columns: 1fr; }
+      .nav-logo img { height: 30px; }
+    }
+    @media (max-width: 600px) {
+      .section-map { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .mockup-cards { grid-template-columns: 1fr; }
+      .project-header h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+      .section h2 { font-size: 1.3rem; }
+    }
+    @media (max-width: 540px) {
+      .page { padding: 48px 16px 80px; }
+      nav .inner { padding: 0 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="inner">
+      <a href="index.html" class="nav-logo">
+        <img src="logo.png" alt="Matteo Toffanin" height="40">
+      </a>
+      <a href="index.html" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Torna al portfolio
+      </a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <header class="project-header">
+      <div class="project-meta">04 — Internal Tooling</div>
+      <h1>Portale Operativo<br>Non Solo Sport</h1>
+      <p class="lead">Digitalizzazione del manuale operativo di Non Solo Sport in un portale web interno costruito con MkDocs: 274 pagine su tecniche di vendita, product knowledge (9 brand di calzature, 8 discipline sportive, materiali tessili) e visual merchandising, navigabili tramite sidebar gerarchica, card ad accesso rapido e ricerca full-text in italiano.</p>
+      <div class="tags">
+        <span class="tag">MkDocs</span>
+        <span class="tag">Python</span>
+        <span class="tag">Markdown</span>
+        <span class="tag">HTML / CSS</span>
+        <span class="tag">Lunr.js</span>
+        <span class="tag">MkDocs Material</span>
+        <span class="tag">Information Architecture</span>
+        <span class="tag">Internal Tooling</span>
+        <span class="tag">Technical Writing</span>
+      </div>
+    </header>
+
+    <!-- OVERVIEW -->
+    <div class="section">
+      <div class="section-label">Overview</div>
+      <h2>Obiettivo del progetto</h2>
+      <p>Il manuale operativo di Non Solo Sport esisteva in forma frammentata: procedure di vendita, schede tecniche di prodotto, linee guida di visual merchandising e istruzioni di magazzino erano distribuiti tra documenti Word, PDF e fogli cartacei — inaccessibili al personale durante il lavoro quotidiano in negozio.</p>
+      <p>L'obiettivo era centralizzare tutto in un portale web interno consultabile da qualsiasi dispositivo, aggiornabile senza competenze tecniche e strutturato attorno ai reali flussi di lavoro del personale — non alla logica organizzativa dell'archivio originale.</p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value">274</div>
+          <div class="kpi-label">Pagine</div>
+          <div class="kpi-sub">Contenuti pubblicati</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">8</div>
+          <div class="kpi-label">Sezioni</div>
+          <div class="kpi-sub">Macro-aree tematiche</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">9</div>
+          <div class="kpi-label">Brand</div>
+          <div class="kpi-sub">Con schede tecniche calzature</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value">8</div>
+          <div class="kpi-label">Sport</div>
+          <div class="kpi-sub">Con guide calzature dedicate</div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- FASE 01 -->
+    <div class="section">
+      <div class="section-label">Fase 01</div>
+      <h2>Architettura dei contenuti</h2>
+      <p>Il lavoro è partito dalla mappatura dei contenuti esistenti e dalla definizione di una struttura che rispecchiasse i reali bisogni del personale — non la logica dei documenti originali. Il risultato sono 8 sezioni principali, ciascuna con profondità e granularità calibrate sul volume e sulla frequenza d'uso delle informazioni.</p>
+
+      <div class="section-map">
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Azienda</span>
+            <span class="section-card-count">10 pagine</span>
+          </div>
+          <div class="section-card-desc">Storia, identità, valori, brand, format di negozio (NSS e GFC Gallery) e strategia omnicanale ed e-commerce.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Storia & Mission</span>
+            <span class="topic-chip">Format negozio</span>
+            <span class="topic-chip">Omnicanalità</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Metodo di vendita</span>
+            <span class="section-card-count">59 pagine</span>
+          </div>
+          <div class="section-card-desc">La sezione più ampia: tecniche di vendita, approccio al cliente, sondaggio, gestione obiezioni (prezzo, articolo, tempo), gioco di squadra e upselling.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Accoglienza</span>
+            <span class="topic-chip">Sondaggio</span>
+            <span class="topic-chip">Obiezioni</span>
+            <span class="topic-chip">Upselling</span>
+            <span class="topic-chip">Team selling</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Manuale Visual 2023</span>
+            <span class="section-card-count">29 pagine</span>
+          </div>
+          <div class="section-card-desc">Criteri espositivi per pareti (2–5 moduli), tavoli, vetrine e zona zaini. Procedure di prezzatura, taccheggio, gestione saldi e ultimi numeri calzature.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Layout pareti</span>
+            <span class="topic-chip">Vetrine</span>
+            <span class="topic-chip">Prezzatura</span>
+            <span class="topic-chip">Taccheggio</span>
+            <span class="topic-chip">Saldi</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Gestione Magazzino</span>
+            <span class="section-card-count">7 pagine</span>
+          </div>
+          <div class="section-card-desc">Struttura generale, suddivisione per categoria, organizzazione abbigliamento, accessori e calzature. Gestione fine serie e cuscinetti.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Struttura</span>
+            <span class="topic-chip">Abbigliamento</span>
+            <span class="topic-chip">Calzature</span>
+            <span class="topic-chip">Fine serie</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Prodotto — Abbigliamento</span>
+            <span class="section-card-count">39 pagine</span>
+          </div>
+          <div class="section-card-desc">Conoscenza tecnica di fibre e materiali: naturali (cotone, lana, lino, seta), sintetiche (poliestere, poliammide, elastomeri), microfibre, modal, viscosa.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Fibre naturali</span>
+            <span class="topic-chip">Fibre sintetiche</span>
+            <span class="topic-chip">Microfibre</span>
+            <span class="topic-chip">Lana & Modal</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Etichettatura Tessile</span>
+            <span class="section-card-count">10 pagine</span>
+          </div>
+          <div class="section-card-desc">Normative di etichettatura, nomenclatura dei capi in italiano e inglese, simboli di manutenzione e composizione.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Normative</span>
+            <span class="topic-chip">Simboli cura</span>
+            <span class="topic-chip">Nomenclatura EN/IT</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Prodotto — Calzature</span>
+            <span class="section-card-count">52 pagine</span>
+          </div>
+          <div class="section-card-desc">Schede tecniche per 9 brand: storia, tecnologie di tomaia, intersuola e suola esterna. Include biomeccanica del piede, tipologie di appoggio e fasi del passo.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Nike · Adidas · Asics</span>
+            <span class="topic-chip">Puma · Reebok · Mizuno</span>
+            <span class="topic-chip">New Balance · Lotto · Fila</span>
+            <span class="topic-chip">Biomeccanica</span>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-top">
+            <span class="section-card-name">Sport</span>
+            <span class="section-card-count">26 pagine</span>
+          </div>
+          <div class="section-card-desc">Guide per disciplina sportiva: calzature specifiche per terreno/ruolo, caratteristiche tecniche rilevanti e criteri di consiglio al cliente.</div>
+          <div class="section-card-topics">
+            <span class="topic-chip">Running</span>
+            <span class="topic-chip">Calcio · Basket · Volley</span>
+            <span class="topic-chip">Tennis · Padel</span>
+            <span class="topic-chip">Outdoor · Training</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- FASE 02 -->
+    <div class="section">
+      <div class="section-label">Fase 02</div>
+      <h2>Sviluppo — MkDocs & Customizzazione</h2>
+      <p>Il portale è costruito su MkDocs Material come base, con un tema completamente personalizzato per rispecchiare l'identità visiva di Non Solo Sport e ottimizzato per la consultazione da dispositivi mobili in reparto.</p>
+
+      <div class="sub-block">
+        <h3>Configurazione principale</h3>
+        <p>Il file di configurazione MkDocs definisce il tema Material come base, abilita la navigazione a tab e sezioni espandibili, il pulsante "torna in cima" e il suggerimento automatico nella barra di ricerca. Il plugin Search è configurato esplicitamente in italiano per gestire correttamente la morfologia della lingua, mentre il plugin Minify comprime l'HTML in output per ridurre i tempi di caricamento.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3>CSS personalizzato — scelte principali</h3>
+        <p>Il tema è stato sovrascritto in più punti per adattarlo all'identità visiva aziendale. La palette colori è stata impostata sul blu istituzionale del brand. L'header è stato ridisegnato con CSS Grid per centrare il logo e allineare la barra di ricerca a destra, eliminando il titolo testuale del sito. Nella sidebar, il comportamento di default di MkDocs che tronca le voci lunghe con puntini di sospensione è stato rimosso — i titoli delle procedure operative sono spesso lunghi e devono essere leggibili per intero. Le card della homepage hanno ricevuto un bordo superiore colorato e un effetto hover con sollevamento. Il pannello laterale destro con l'indice della pagina è stato nascosto per lasciare più spazio al contenuto, e la larghezza massima della griglia è stata portata a 1400px per sfruttare monitor da scrivania e tablet in orizzontale.</p>
+      </div>
+
+      <div class="sub-block">
+        <h3>Anteprima del portale</h3>
+        <div class="dashboard-block">
+          <img src="screenshot.png" alt="Anteprima del portale" class="zoomable">
+          <div class="caption">Homepage del portale — card di accesso rapido alle 8 sezioni principali</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- FASE 03 -->
+    <div class="section">
+      <div class="section-label">Fase 03</div>
+      <h2>Sistema di Navigazione Trimodale</h2>
+      <p>Il portale è progettato per tre profili d'uso distinti: chi esplora la struttura, chi vuole raggiungere rapidamente una sezione frequente, e chi cerca qualcosa di specifico senza sapere dove trovarlo.</p>
+
+      <div class="nav-modes">
+        <div class="nav-mode-card">
+          <div class="nav-mode-icon">☰</div>
+          <div class="nav-mode-name">Sidebar gerarchica</div>
+          <div class="nav-mode-desc">Navigazione ad albero con sezioni espandibili e separatori tra macro-aree. Il testo delle voci non viene troncato — scelta deliberata per leggibilità su titoli lunghi come quelli delle procedure operative.</div>
+          <div class="nav-mode-tech">MkDocs navigation.sections + CSS white-space override</div>
+        </div>
+        <div class="nav-mode-card">
+          <div class="nav-mode-icon">⊞</div>
+          <div class="nav-mode-name">Card ad accesso rapido</div>
+          <div class="nav-mode-desc">Homepage con 8 card cliccabili — una per sezione — con icona, titolo e descrizione sintetica. Accesso diretto alle macro-aree senza navigare la sidebar, ideale per utenti che sanno già dove andare.</div>
+          <div class="nav-mode-tech">MkDocs Material grid cards + CSS hover custom</div>
+        </div>
+        <div class="nav-mode-card">
+          <div class="nav-mode-icon">⌕</div>
+          <div class="nav-mode-name">Ricerca full-text</div>
+          <div class="nav-mode-desc">Ricerca istantanea su tutte le 274 pagine con highlight dei termini trovati e anteprima del contesto. Indicizzazione Lunr.js configurata in italiano per gestire correttamente morfologia e accenti.</div>
+          <div class="nav-mode-tech">Lunr.js + MkDocs Search plugin (lang: it)</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- RISULTATI -->
+    <div class="section">
+      <div class="section-label">Risultati</div>
+      <h2>Cosa ha risolto il progetto</h2>
+
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-num">01</div>
+          <h4>274 pagine in un portale unico</h4>
+          <p>Procedure di vendita, schede tecniche di 9 brand di calzature, guide per 8 discipline sportive, manuale visual e normative tessili — tutto accessibile da un unico punto, da qualsiasi dispositivo in negozio.</p>
+          <div class="insight-action">Da archivio frammentato a portale consultabile</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">02</div>
+          <h4>Product knowledge sempre disponibile</h4>
+          <p>Il venditore può consultare in tempo reale la tecnologia Air Unit di Nike, il Wave System di Mizuno o i tipi di appoggio plantare o i tipi di appoggio plantare durante una conversazione con il cliente — senza cercare tra fogli cartacei.</p>
+          <div class="insight-action">Sezione calzature · 52 pagine brand + biomeccanica</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">03</div>
+          <h4>Metodo di vendita strutturato e consultabile</h4>
+          <p>59 pagine traducono le tecniche di vendita in una guida consultabile per singolo argomento: dall'accoglienza del cliente alla gestione dell'obiezione di prezzo, fino al gioco di squadra tra colleghi.</p>
+          <div class="insight-action">Onboarding nuovo personale accelerato</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">04</div>
+          <h4>Aggiornamenti senza competenze tecniche</h4>
+          <p>Ogni modifica al manuale corrisponde a editare un file Markdown e rieseguire il build. Nessun CMS, nessun database — chiunque sappia aprire un file di testo può aggiornare il contenuto.</p>
+          <div class="insight-action">Markdown + MkDocs build pipeline</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">05</div>
+          <h4>Zero dipendenze server lato runtime</h4>
+          <p>Il sito statico è deployabile su qualsiasi file server o intranet aziendale senza backend, database o configurazioni complesse. La ricerca full-text gira interamente lato client con Lunr.js.</p>
+          <div class="insight-action">Deploy su intranet · Nessun backend richiesto</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-num">06</div>
+          <h4>Identità visiva coerente col brand</h4>
+          <p>Header con logo centrato tramite CSS Grid, palette aziendale personalizzata, sidebar con separatori tra sezioni, cards con top-border brand e max-width a 1400px per sfruttare monitor da scrivania e tablet orizzontale.</p>
+          <div class="insight-action">CSS custom completo su MkDocs Material</div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- CONCLUSIONI -->
+    <div class="section">
+      <div class="section-label">Conclusioni</div>
+      <h2>Takeaway</h2>
+      <p>Il progetto dimostra come una scelta tecnologica deliberatamente semplice — sito statico, Markdown, build automatico — possa risolvere un problema operativo reale in modo più efficace di soluzioni più complesse. La chiave non è la tecnologia scelta, ma la cura nell'architettura dei contenuti: strutturare 274 pagine in modo che il personale trovi quello che cerca in pochi secondi, sia durante un riassortimento in magazzino, sia spiegando a un cliente la differenza tra le tecnologie proprietarie dei brand (Boost, Gel, Wave…).</p>
+    </div>
+
+    <hr>
+
+    <!-- NOTA -->
+    <div class="section">
+      <div class="section-label">Nota</div>
+      <h2>Contesto & Riservatezza</h2>
+      <div class="note-block">
+        Il portale è uno strumento interno aziendale. La struttura delle sezioni, le scelte tecniche e il sistema di navigazione sono descritti integralmente; i contenuti operativi sensibili (procedure di cassa, politiche commerciali, dati di magazzino) non sono pubblicati per ragioni di riservatezza aziendale.
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Matteo Toffanin — Portfolio</p>
+  </footer>
+
+</body>
+</html>
